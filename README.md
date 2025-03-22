@@ -23,20 +23,26 @@ This repository documents a Git branching strategy and a CI/CD pipeline designed
 
 ---
 
+
 ## 🔁 Pull Request Flow
 
 - `feat/*` and `fix/*` are branched from `dev`
-- When work is done:
-  - Create PR into `dev`
-  - CI runs (tests + SonarQube)
-  - If successful → merge into `dev`
 
-- `release/*` is manually created from `dev` when preparing a release
-  - PR from `release/*` into `main`
-  - CI runs (tests + SonarQube)
-  - If successful → merge into `main`
+### ✅ When work is done:
+1. Create a PR into `dev`  
+2. CI runs (tests + SonarQube)  
+3. If successful → merge into `dev`
 
 ---
+
+- `release/*` is manually created from `dev` when preparing a release
+
+### ✅ Release process:
+1. Create a PR from `release/*` into `main`  
+2. CI runs (tests + SonarQube)  
+3. If successful → merge into `main`  
+4. **Manually create a Git tag** (e.g. `v1.2.0`) after the merge
+
 
 ## ✅ CI Pipeline
 
