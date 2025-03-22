@@ -1,0 +1,51 @@
+
+name: CI/CD - Dev Environment
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  ci:
+    name: Run CI (Tests + SonarQube)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm test
+      - name: Run SonarQube analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          npm install -g sonarqube-scanner
+          sonar-scanner
+
+  cd:
+    name: Deploy to Dev Environment
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Docker Image
+        run: docker build -t myapp:dev-${{ github.sha }} .
+      - name: Push to Registry
+        run: echo "Push to registry logic here"
+      - name: SSH & Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_DEV_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "docker pull and deploy steps here"
