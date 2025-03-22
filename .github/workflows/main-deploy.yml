@@ -1,13 +1,10 @@
 
-name: CI/CD - Prod Environment
+name: CD - Prod Environment (on tag)
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 jobs:
   ci:
@@ -31,22 +28,15 @@ jobs:
           sonar-scanner
 
   cd:
-    name: Deploy to Prod Environment
+    name: Deploy to Production (Tagged Release)
     needs: ci
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v3
       - name: Build Docker Image
-        run: docker build -t myapp:prod-${{ github.sha }} .
+        run: docker build -t myapp:${{ github.ref_name }} .
       - name: Push to Registry
-        run: echo "Push to registry logic here"
-      - name: Tag release
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git tag v1.0.${{ github.run_number }}
-          git push origin --tags
+        run: echo "Push to registry as myapp:${{ github.ref_name }}"
       - name: SSH & Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -54,4 +44,4 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "docker pull and deploy steps here"
+            echo "docker pull and deploy for tag ${{ github.ref_name }}"

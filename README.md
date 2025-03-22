@@ -56,22 +56,21 @@ CI is triggered on PRs to `dev` and `main`:
 
 ---
 
+
 ## 🚀 CD Pipeline
 
-CD is triggered on **merge** to `dev` and `main`:
+CD is triggered on **merge** to `dev` and **tag creation** on `main`:
 
 ### On merge to `dev`:
 1. Build Docker image (`dev-<short_sha>`)
 2. Push to container registry
 3. Deploy to EC2 (Development Environment)
 
-### On merge to `main`:
-1. Build Docker image (`prod-<version>`)
+### On tag push (e.g., `v1.2.3`) on `main`:
+1. Build Docker image (`myapp:v1.2.3`)
 2. Push to container registry
-3. **Tag manually** using Git (`vX.Y.Z`)
-4. Deploy to EC2 (Production Environment)
+3. Deploy to EC2 (Production Environment)
 
----
 
 ## 🏷️ Release & Tagging
 
